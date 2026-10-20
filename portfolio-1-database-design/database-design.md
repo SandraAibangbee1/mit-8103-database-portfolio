@@ -155,6 +155,8 @@ The immutable, double-entry financial journal. Balance changes are never applied
 
 The diagram below models the four core tables, their structural cardinalities, attributes, keys, and operational constraints:
 
+![KoraPay Wallet ER Diagram](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_ERDiagram.png)
+
 ```mermaid
 erDiagram
     CUSTOMERS o|--o| WALLETS : "owns"
