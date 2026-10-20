@@ -2,7 +2,7 @@
 
 **Student:** Sandra Aibangbee  
 **Case Study:** KoraPay Wallet (A Simulated Nigerian Fintech Platform)  
-**Project Status:** Planning Phase (Implementation Not Started)
+**Project Status:** Portfolio 1 schema implemented and constraint tests completed. Portfolios 2–5 pending
 
 ---
 
