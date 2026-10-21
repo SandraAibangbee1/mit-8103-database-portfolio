@@ -5,8 +5,8 @@
 - **Database:** `korapay_wallet` (PostgreSQL 18), loaded with the synthetic P2 benchmark dataset
 - **Dataset:** 5,000 new customer wallets (5,003 wallets in total, including the existing Portfolio 1 wallets) and 210,000 ledger entries
 
-> **Status: analysis draft for review.** This document currently covers Q01, Q02 and Q03.
-> Other queries and the overall conclusions have not been written yet.
+> **Status: analysis draft for review.** This document covers Q01–Q03 and the
+> overall conclusions drawn from them.
 
 ---
 
@@ -399,3 +399,62 @@ can be compared visually.
 - [P2_21 Rewrite results](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_21_Q03_RewriteResults.png)
 - [P2_22 Rewrite plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_22_Q03_AfterPlan_Top.png)
 - [P2_23 Rewrite plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_23_Q03_AfterPlan_Bottom.png)
+
+---
+
+## Overall conclusions
+
+### Comparison of the three investigations
+
+| Query | Technique | Execution Time (before → after) | Shared buffer hits (before → after) | New index storage |
+|---|---|---:|---:|---:|
+| Q01 Wallet statement | Composite index `(wallet_id, created_at DESC, ledger_entry_id DESC)` | 133.082 → 0.965 ms | 2,670 → 603 | 8,344 kB |
+| Q02 Daily transfer totals | Partial index on `created_at` for SUCCESSFUL TRANSFER rows | 9.657 → 4.249 ms | 1,915 → 173 | 2,208 kB |
+| Q03 Top sending wallets | Query rewrite: aggregate before joining | 6.644 → 4.586 ms | 297 → 297 | None |
+
+### What the evidence shows
+
+- **Q01 — composite index.** The largest recorded improvement came from
+  replacing a parallel scan of all 210,000 ledger entries with a targeted
+  bitmap scan of the wallet's 149 entries. The index did not remove the sort:
+  the bitmap scan still required a Sort node before the Limit. The before run
+  also used a parallel worker, so the improvement combines reduced scanning
+  with a change from a parallel to a serial plan.
+- **Q02 — partial index.** Indexing only SUCCESSFUL TRANSFER rows let the
+  date range be answered from a 2,208 kB index instead of a sequential scan of
+  105,001 transactions. Buffer hits fell by about 90.97%. The Sort and
+  GroupAggregate remained, because rows are grouped by the derived Lagos date.
+- **Q03 — query rewrite.** Both versions already used the Q02 index
+  `idx_p2_successful_transfer_date`, and no new index was created for Q03.
+  Aggregating before joining reduced the rows passing through the join from
+  8,115 to 3,267 and lowered the recorded time. Shared buffer hits stayed at
+  297. This shows that a rewrite can reduce processing work without reducing
+  buffer accesses.
+- **Indexes can serve more than one query.** The Q02 partial index also
+  supported both Q03 plans, because Q03 uses the same filters.
+
+### Costs and trade-offs
+
+- **Storage:** the two new indexes add 8,344 kB and 2,208 kB of measured disk
+  space, and they will grow with the data.
+- **Write maintenance:** every qualifying insert, and every status change into
+  or out of the Q02 index condition, must also update the index. The indexes
+  were created after the benchmark load, so this write cost has not been
+  measured.
+- **Rewrites have no storage cost**, but their benefit depends on the plan the
+  optimiser chooses. In Q03 the benefit was smaller than for the indexes.
+
+### Limits of these conclusions
+
+- All figures are **individual recorded runs** using PostgreSQL's
+  `Execution Time`. They are not averages of repeated benchmark runs, and they
+  do not guarantee production performance.
+- All buffer accesses were shared hits (data already in memory). Cold-cache
+  behaviour was not measured.
+- Q02 and Q03 times are small (under 10 ms), so normal run-to-run variation
+  could noticeably change their ratios.
+- The dataset is synthetic, and query frequencies are design assumptions, not
+  measured workloads.
+- Repeating each measurement several times and reporting a median, and
+  measuring insert cost with the indexes in place, would strengthen these
+  conclusions.

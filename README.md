@@ -2,7 +2,7 @@
 
 **Student:** Sandra Aibangbee  
 **Case Study:** KoraPay Wallet (A Simulated Nigerian Fintech Platform)  
-**Project Status:** Portfolio 1 schema implemented and constraint tests completed. Portfolios 2–5 pending
+**Project Status:** Portfolio 1 schema and constraint tests implemented. Portfolio 2 contains three query optimisation investigations and performance analysis. Portfolios 3–5 pending
 
 ---
 
@@ -33,11 +33,11 @@ This repository hosts the practical portfolio submissions for **MIT 8103: Advanc
 The implementation will be carried out across five dedicated portfolio milestones:
 
 1. [`portfolio-1-database-design/`](./portfolio-1-database-design/):
-   - **Status:** Planned
+   - **Status:** Implemented: four-table schema created and constraint tests completed. See the [Portfolio 1 README](./portfolio-1-database-design/README.md).
    - **Scope:** Conceptual and logical data modeling, Entity-Relationship (ER) diagram, relational schema design, primary/foreign keys, integrity constraints (`CHECK`, `UNIQUE`), and database normalisation documentation. See the full [Case Study Specification](./portfolio-1-database-design/case-study.md).
 
 2. [`portfolio-2-query-optimisation/`](./portfolio-2-query-optimisation/):
-   - **Status:** Planned
+   - **Status:** Implemented: three query optimisation investigations with execution plans and performance analysis. See the [Portfolio 2 README](./portfolio-2-query-optimisation/README.md).
    - **Scope:** Benchmarking and measuring transaction-history and ledger reconciliation queries before and after indexing strategies and query structure improvements.
 
 3. [`portfolio-3-transactions-concurrency/`](./portfolio-3-transactions-concurrency/):

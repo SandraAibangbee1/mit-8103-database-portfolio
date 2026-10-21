@@ -9,7 +9,8 @@
 --   "recent transactions" screen or a mini-statement. Each row is one ledger
 --   movement on the wallet with its transaction reference, direction
 --   (DEBIT = money out, CREDIT = money in), amount and running balance.
---   It runs very often, so it is a key candidate for plan analysis.
+--   It is intended to support frequent wallet-history requests, so it is a
+--   candidate for plan analysis. Actual workload frequency was not measured.
 -- ============================================================================
 EXPLAIN (ANALYZE, BUFFERS)
 SELECT
