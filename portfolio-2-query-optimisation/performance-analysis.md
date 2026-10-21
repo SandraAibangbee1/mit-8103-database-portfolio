@@ -5,7 +5,7 @@
 - **Database:** `korapay_wallet` (PostgreSQL 18), loaded with the synthetic P2 benchmark dataset
 - **Dataset:** 5,000 new customer wallets (5,003 wallets in total, including the existing Portfolio 1 wallets) and 210,000 ledger entries
 
-> **Status: analysis draft for review.** This document currently covers Q01 and Q02.
+> **Status: analysis draft for review.** This document currently covers Q01, Q02 and Q03.
 > Other queries and the overall conclusions have not been written yet.
 
 ---
@@ -303,3 +303,99 @@ transfers, which matches Q02's `WHERE` conditions, and it is keyed on
 - [P2_14 Index created](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_14_Q02_Index.png)
 - [P2_15 After plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_15_Q02_AfterPlan_Top.png)
 - [P2_16 After plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_16_Q02_AfterPlan_Bottom.png)
+
+---
+
+## Q03 — Top 10 sending wallets (June 2026)
+
+### 1. Purpose
+
+Q03 returns the 10 wallets that sent the highest total value through
+successful transfers in June 2026, with each wallet's transfer count. Unlike
+Q01 and Q02, this optimisation is a **query rewrite**, not a new index.
+
+| Item | File |
+|---|---|
+| Original query | [queries/q03_top_sending_wallets.sql](queries/q03_top_sending_wallets.sql) |
+| Rewritten query | [queries/q03_top_sending_wallets_optimised.sql](queries/q03_top_sending_wallets_optimised.sql) |
+| EXPLAIN script (original) | [sql/q03_explain_before.sql](sql/q03_explain_before.sql) |
+| EXPLAIN script (rewrite) | [sql/q03_explain_after.sql](sql/q03_explain_after.sql) |
+| Plan (original) | [plans/q03_before.txt](plans/q03_before.txt) |
+| Plan (rewrite) | [plans/q03_after.txt](plans/q03_after.txt) |
+
+### 2. The rewrite
+
+- **Original:** joins every qualifying transfer to `wallets` through
+  `source_wallet_id`, then groups the joined rows and sums the amounts.
+- **Rewrite:** a subquery first groups the qualifying transfers by
+  `source_wallet_id` and calculates `transfer_count` and `total_sent`. Only
+  these grouped rows are then joined to `wallets` to get the `wallet_number`.
+
+Both use the same filters, timestamp boundaries and ordering
+(`total_sent DESC, wallet_number ASC`), with `LIMIT 10` in the outer query.
+
+### 3. Recorded results
+
+| Measure | Original | Rewrite |
+|---|---:|---:|
+| Execution Time (PostgreSQL) | 6.644 ms | 4.586 ms |
+| Shared buffer hits (top node) | 297 | 297 |
+| Qualifying transfers read | 8,115 | 8,115 |
+| Rows entering the join (transfer side) | 8,115 | 3,267 |
+| Wallets scanned | 5,003 | 5,003 |
+| Rows returned | 10 | 10 |
+
+- **Recorded speed-up:** 6.644 ÷ 4.586 ≈ **1.45 times** faster, or **30.98%**
+  less execution time, in these individual recorded runs.
+- **Buffer accesses did not decrease:** both plans used 297 shared buffer hits.
+
+### 4. What the plans show
+
+- **Same index, no new index:** both plans read the 8,115 qualifying transfers
+  with an Index Scan on the existing `idx_p2_successful_transfer_date` (created
+  for Q02; 173 buffers). No new index was created for Q03.
+- Both plans scan all 5,003 wallets using 124 shared buffer hits.
+  The original builds its hash table from wallets; the rewrite
+  builds its hash table from the 3,267 aggregated sender groups.
+- **Original plan:** a Hash Join combines all **8,115** transfer rows with
+  wallets, and a HashAggregate then groups the result into 3,267 wallets.
+- **Rewrite plan:** a HashAggregate first groups the transfers into **3,267**
+  sender groups, and a Hash Join then matches those groups to wallets.
+- **Same final step:** both finish with a top-N heapsort (26 kB) and a Limit
+  that returns 10 rows.
+
+The rewrite reads the same pages; it reduces the number of rows passing
+through the join, from 8,115 to 3,267. This is the likely source of the lower
+recorded time.
+
+### 5. Result equivalence
+
+The two queries should return the same result, for these reasons:
+
+- `wallets.wallet_id` is the primary key, so each transfer joins to exactly
+  one wallet. Grouping by `source_wallet_id` before the join gives the same
+  groups as grouping by wallet after the join.
+- The filters, ordering and outer `LIMIT 10` are identical.
+- `wallet_number` is unique, so the tie-breaker gives a fully deterministic
+  order, and the same 10 rows are selected.
+
+This is a reasoning-based argument. No automated equality test comparing the
+two result sets has been performed. The result screenshots (P2_18 and P2_21)
+can be compared visually.
+
+### 6. Limitations
+
+- These are **individual recorded runs** with all data in memory. They are not
+  averages, and they do not guarantee production performance.
+- The time difference is about 2 ms, so normal run-to-run variation could
+  noticeably change the ratio.
+- The dataset is synthetic, as described for Q01.
+
+### 7. Related screenshots
+
+- [P2_18 Original Q03 results](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_18_Q03_Results.png)
+- [P2_19 Original plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_19_Q03_BeforePlan_Top.png)
+- [P2_20 Original plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_20_Q03_BeforePlan_Bottom.png)
+- [P2_21 Rewrite results](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_21_Q03_RewriteResults.png)
+- [P2_22 Rewrite plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_22_Q03_AfterPlan_Top.png)
+- [P2_23 Rewrite plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_23_Q03_AfterPlan_Bottom.png)
