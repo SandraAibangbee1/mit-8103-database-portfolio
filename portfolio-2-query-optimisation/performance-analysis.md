@@ -5,7 +5,7 @@
 - **Database:** `korapay_wallet` (PostgreSQL 18), loaded with the synthetic P2 benchmark dataset
 - **Dataset:** 5,000 new customer wallets (5,003 wallets in total, including the existing Portfolio 1 wallets) and 210,000 ledger entries
 
-> **Status: analysis draft for review.** This document currently covers Q01 only.
+> **Status: analysis draft for review.** This document currently covers Q01 and Q02.
 > Other queries and the overall conclusions have not been written yet.
 
 ---
@@ -196,3 +196,110 @@ the sort.
 - [P2_07 Index created](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_07_Q01_Index.png)
 - [P2_08 After plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_08_Q01_AfterPlan_Top.png)
 - [P2_09 After plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_09_Q01_AfterPlan_Bottom.png)
+
+---
+
+## Q02 — Daily successful transfer totals (June 2026)
+
+### 1. Purpose
+
+Q02 returns the number and total value of successful transfers for each
+Africa/Lagos calendar day in June 2026. It reads `transactions` only, so each
+transfer is counted once. Joining `ledger_entries` would double the totals,
+because each transfer has one DEBIT and one CREDIT. The date range is applied
+directly to `created_at`, so an index on that column can support it.
+
+| Item | File |
+|---|---|
+| Query | [queries/q02_daily_transfer_totals.sql](queries/q02_daily_transfer_totals.sql) |
+| EXPLAIN script | [sql/q02_explain.sql](sql/q02_explain.sql) |
+| Index script | [sql/q02_create_index.sql](sql/q02_create_index.sql) |
+| Plan before index | [plans/q02_before.txt](plans/q02_before.txt) |
+| Plan after index | [plans/q02_after.txt](plans/q02_after.txt) |
+
+### 2. Recorded results
+
+| Measure | Before index | After index |
+|---|---:|---:|
+| Execution Time (PostgreSQL) | 9.657 ms | 4.249 ms |
+| Shared buffer hits (top node) | 1,915 | 173 |
+| Matching transfers processed | 8,115 | 8,115 |
+| Daily groups returned | 30 | 30 |
+
+- **Recorded speed-up:** 9.657 ÷ 4.249 ≈ **2.27 times** faster.
+- **Buffer reduction:** 1,915 → 173 shared hits, about **90.97%** fewer.
+- **Index size:** `idx_p2_successful_transfer_date` has a measured disk size of **2,208 kB**.
+
+### 3. Before the index
+
+- **Plan:** [plans/q02_before.txt](plans/q02_before.txt)
+- **Screenshots:** [P2_12 Before plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_12_Q02_BeforePlan_Top.png), [P2_13 Before plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_13_Q02_BeforePlan_Bottom.png)
+
+A **Seq Scan on `transactions`** examined all **105,001** transactions. The
+filter on date range, type and status removed **96,886** of them, leaving the
+**8,115** matching transfers. A **Sort** (quicksort, 446 kB) ordered these by
+Lagos date, and a **GroupAggregate** produced the 30 daily totals.
+
+### 4. Index created
+
+- **Script:** [sql/q02_create_index.sql](sql/q02_create_index.sql)
+- **Screenshot:** [P2_14 Index](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_14_Q02_Index.png)
+
+```sql
+CREATE INDEX idx_p2_successful_transfer_date
+ON public.transactions (created_at)
+WHERE transaction_type = 'TRANSFER'
+  AND status = 'SUCCESSFUL';
+```
+
+This is a **partial index**. It only contains rows that are successful
+transfers, which matches Q02's `WHERE` conditions, and it is keyed on
+`created_at` to support the date range.
+
+### 5. After the index
+
+- **Plan:** [plans/q02_after.txt](plans/q02_after.txt)
+- **Screenshots:** [P2_15 After plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_15_Q02_AfterPlan_Top.png), [P2_16 After plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_16_Q02_AfterPlan_Bottom.png)
+
+- An **Index Scan using `idx_p2_successful_transfer_date`** replaced the
+  sequential scan. Its `Index Cond` is the `created_at` range only. No separate
+  filter on type or status appears, because the index contains only
+  SUCCESSFUL TRANSFER rows.
+- It returned the same **8,115** rows directly, so no rows were removed by a
+  filter.
+- The **Sort** (quicksort, 446 kB) and **GroupAggregate** remain unchanged.
+  The rows are grouped by the derived Lagos date, so the plan still sorts them
+  even though the index is ordered by `created_at`.
+- Both plans are serial (no parallel workers). The improvement comes from
+  reading far fewer pages (173 instead of 1,915), not from a change in
+  parallelism.
+
+### 6. Trade-offs
+
+- **Storage:** 2,208 kB of measured disk space. This is smaller than a full
+  index on `created_at` would be, because only qualifying rows are included.
+- **Write maintenance:** every inserted row that is a SUCCESSFUL TRANSFER adds
+  an index entry. A row that changes into or out of that state (for example,
+  from PENDING to SUCCESSFUL) also changes the index. Rows outside the
+  condition add no index entries. This write cost has not been measured.
+- **Narrow use:** the index only helps queries whose conditions match its
+  predicate (successful transfers). It does not support other transaction
+  types or statuses.
+
+### 7. Limitations
+
+- These are **individual recorded runs** with all data in memory (shared
+  buffer hits). They are not averages, and they do not guarantee production
+  performance.
+- Absolute times are small (under 10 ms), so normal run-to-run variation could
+  noticeably change the speed-up ratio.
+- The dataset is synthetic, as described for Q01.
+
+### 8. Related screenshots
+
+- [P2_11 Q02 results](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_11_Q02_Results.png)
+- [P2_12 Before plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_12_Q02_BeforePlan_Top.png)
+- [P2_13 Before plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_13_Q02_BeforePlan_Bottom.png)
+- [P2_14 Index created](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_14_Q02_Index.png)
+- [P2_15 After plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_15_Q02_AfterPlan_Top.png)
+- [P2_16 After plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_16_Q02_AfterPlan_Bottom.png)
