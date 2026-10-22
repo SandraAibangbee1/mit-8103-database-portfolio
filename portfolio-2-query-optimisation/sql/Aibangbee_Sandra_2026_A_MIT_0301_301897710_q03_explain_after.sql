@@ -5,7 +5,7 @@
 -- Query:        Q03 (optimised rewrite) — Top 10 sending wallets (June 2026)
 --
 -- Business purpose:
---   Same result as queries/q03_top_sending_wallets.sql: the 10 wallets that
+--   Same result as queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets.sql: the 10 wallets that
 --   sent the most money through successful transfers in June 2026.
 --
 -- Proposed optimisation (to be confirmed with EXPLAIN ANALYZE):

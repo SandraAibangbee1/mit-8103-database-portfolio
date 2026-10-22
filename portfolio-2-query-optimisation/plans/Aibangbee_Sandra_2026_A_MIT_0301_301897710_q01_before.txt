@@ -1,4 +1,4 @@
-IS THIS THE PLAN - "Limit  (cost=4782.54..4787.33 rows=42 width=70) (actual time=129.281..132.954 rows=50.00 loops=1)"
+"Limit  (cost=4782.54..4787.33 rows=42 width=70) (actual time=129.281..132.954 rows=50.00 loops=1)"
 "  Buffers: shared hit=2670"
 "  ->  Gather Merge  (cost=4782.54..4787.33 rows=42 width=70) (actual time=129.278..132.942 rows=50.00 loops=1)"
 "        Workers Planned: 1"

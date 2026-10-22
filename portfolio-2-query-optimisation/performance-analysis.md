@@ -25,11 +25,11 @@ has not been measured.
 
 | Item | File |
 |---|---|
-| Query | [queries/q01_wallet_statement.sql](queries/q01_wallet_statement.sql) |
-| EXPLAIN script | [sql/q01_explain.sql](sql/q01_explain.sql) |
-| Index script | [sql/q01_create_index.sql](sql/q01_create_index.sql) |
-| Plan before index | [plans/q01_before.txt](plans/q01_before.txt) |
-| Plan after index | [plans/q01_after.txt](plans/q01_after.txt) |
+| Query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_wallet_statement.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_wallet_statement.sql) |
+| EXPLAIN script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_explain.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_explain.sql) |
+| Index script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_create_index.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_create_index.sql) |
+| Plan before index | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_before.txt) |
+| Plan after index | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_after.txt) |
 
 Plans were captured with `EXPLAIN (ANALYZE, BUFFERS)`.
 
@@ -51,7 +51,7 @@ pgAdmin's total query runtime, which also includes client and network overhead.
 
 ### 3. Before the index: what the plan shows
 
-- **Plan:** [plans/q01_before.txt](plans/q01_before.txt)
+- **Plan:** [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_before.txt)
 - **Screenshots:** [P2_05 Before plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_05_Q01_BeforePlan_Top.png), [P2_06 Before plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_06_Q01_BeforePlan_Bottom.png)
 
 What the plan does:
@@ -75,7 +75,7 @@ run, but the plan alone cannot show exactly how much time they contributed.
 
 ### 4. Index created
 
-- **Script:** [sql/q01_create_index.sql](sql/q01_create_index.sql)
+- **Script:** [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_create_index.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_create_index.sql)
 - **Screenshot:** [P2_07 Index](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_07_Q01_Index.png)
 
 ```sql
@@ -103,7 +103,7 @@ ON ledger_entries (
 
 ### 5. After the index: what the plan shows
 
-- **Plan:** [plans/q01_after.txt](plans/q01_after.txt)
+- **Plan:** [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_after.txt)
 - **Screenshots:** [P2_08 After plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_08_Q01_AfterPlan_Top.png), [P2_09 After plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_09_Q01_AfterPlan_Bottom.png)
 
 What the plan does:
@@ -211,11 +211,11 @@ directly to `created_at`, so an index on that column can support it.
 
 | Item | File |
 |---|---|
-| Query | [queries/q02_daily_transfer_totals.sql](queries/q02_daily_transfer_totals.sql) |
-| EXPLAIN script | [sql/q02_explain.sql](sql/q02_explain.sql) |
-| Index script | [sql/q02_create_index.sql](sql/q02_create_index.sql) |
-| Plan before index | [plans/q02_before.txt](plans/q02_before.txt) |
-| Plan after index | [plans/q02_after.txt](plans/q02_after.txt) |
+| Query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_daily_transfer_totals.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_daily_transfer_totals.sql) |
+| EXPLAIN script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_explain.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_explain.sql) |
+| Index script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_create_index.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_create_index.sql) |
+| Plan before index | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_before.txt) |
+| Plan after index | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_after.txt) |
 
 ### 2. Recorded results
 
@@ -232,7 +232,7 @@ directly to `created_at`, so an index on that column can support it.
 
 ### 3. Before the index
 
-- **Plan:** [plans/q02_before.txt](plans/q02_before.txt)
+- **Plan:** [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_before.txt)
 - **Screenshots:** [P2_12 Before plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_12_Q02_BeforePlan_Top.png), [P2_13 Before plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_13_Q02_BeforePlan_Bottom.png)
 
 A **Seq Scan on `transactions`** examined all **105,001** transactions. The
@@ -242,7 +242,7 @@ Lagos date, and a **GroupAggregate** produced the 30 daily totals.
 
 ### 4. Index created
 
-- **Script:** [sql/q02_create_index.sql](sql/q02_create_index.sql)
+- **Script:** [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_create_index.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_create_index.sql)
 - **Screenshot:** [P2_14 Index](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_14_Q02_Index.png)
 
 ```sql
@@ -258,7 +258,7 @@ transfers, which matches Q02's `WHERE` conditions, and it is keyed on
 
 ### 5. After the index
 
-- **Plan:** [plans/q02_after.txt](plans/q02_after.txt)
+- **Plan:** [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_after.txt)
 - **Screenshots:** [P2_15 After plan (top)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_15_Q02_AfterPlan_Top.png), [P2_16 After plan (bottom)](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_16_Q02_AfterPlan_Bottom.png)
 
 - An **Index Scan using `idx_p2_successful_transfer_date`** replaced the
@@ -316,12 +316,12 @@ Q01 and Q02, this optimisation is a **query rewrite**, not a new index.
 
 | Item | File |
 |---|---|
-| Original query | [queries/q03_top_sending_wallets.sql](queries/q03_top_sending_wallets.sql) |
-| Rewritten query | [queries/q03_top_sending_wallets_optimised.sql](queries/q03_top_sending_wallets_optimised.sql) |
-| EXPLAIN script (original) | [sql/q03_explain_before.sql](sql/q03_explain_before.sql) |
-| EXPLAIN script (rewrite) | [sql/q03_explain_after.sql](sql/q03_explain_after.sql) |
-| Plan (original) | [plans/q03_before.txt](plans/q03_before.txt) |
-| Plan (rewrite) | [plans/q03_after.txt](plans/q03_after.txt) |
+| Original query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets.sql) |
+| Rewritten query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets_optimised.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets_optimised.sql) |
+| EXPLAIN script (original) | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_before.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_before.sql) |
+| EXPLAIN script (rewrite) | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_after.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_after.sql) |
+| Plan (original) | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_before.txt) |
+| Plan (rewrite) | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_after.txt) |
 
 ### 2. The rewrite
 

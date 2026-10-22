@@ -67,31 +67,31 @@ trade-offs and limitations.
 
 | Item | File |
 |---|---|
-| Query | [queries/q01_wallet_statement.sql](queries/q01_wallet_statement.sql) |
-| EXPLAIN script | [sql/q01_explain.sql](sql/q01_explain.sql) |
-| Index script | [sql/q01_create_index.sql](sql/q01_create_index.sql) |
-| Plans | [plans/q01_before.txt](plans/q01_before.txt), [plans/q01_after.txt](plans/q01_after.txt) |
+| Query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_wallet_statement.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_wallet_statement.sql) |
+| EXPLAIN script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_explain.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_explain.sql) |
+| Index script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_create_index.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_create_index.sql) |
+| Plans | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_before.txt), [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q01_after.txt) |
 | Analysis screenshot | [P2_10 Q01 performance analysis](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_10_Q01_PerformanceAnalysis.png) |
 
 ### Q02 — Daily transfer totals
 
 | Item | File |
 |---|---|
-| Query | [queries/q02_daily_transfer_totals.sql](queries/q02_daily_transfer_totals.sql) |
-| EXPLAIN script | [sql/q02_explain.sql](sql/q02_explain.sql) |
-| Index script | [sql/q02_create_index.sql](sql/q02_create_index.sql) |
-| Plans | [plans/q02_before.txt](plans/q02_before.txt), [plans/q02_after.txt](plans/q02_after.txt) |
+| Query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_daily_transfer_totals.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_daily_transfer_totals.sql) |
+| EXPLAIN script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_explain.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_explain.sql) |
+| Index script | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_create_index.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_create_index.sql) |
+| Plans | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_before.txt), [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q02_after.txt) |
 | Analysis screenshot | [P2_17 Q02 performance analysis](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_17_Q02_PerformanceAnalysis.png) |
 
 ### Q03 — Top sending wallets
 
 | Item | File |
 |---|---|
-| Original query | [queries/q03_top_sending_wallets.sql](queries/q03_top_sending_wallets.sql) |
-| Rewritten query | [queries/q03_top_sending_wallets_optimised.sql](queries/q03_top_sending_wallets_optimised.sql) |
-| EXPLAIN scripts | [sql/q03_explain_before.sql](sql/q03_explain_before.sql), [sql/q03_explain_after.sql](sql/q03_explain_after.sql) |
+| Original query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets.sql) |
+| Rewritten query | [queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets_optimised.sql](queries/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_top_sending_wallets_optimised.sql) |
+| EXPLAIN scripts | [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_before.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_before.sql), [sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_after.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_explain_after.sql) |
 | Index script | None; Q03 uses the existing Q02 index |
-| Plans | [plans/q03_before.txt](plans/q03_before.txt), [plans/q03_after.txt](plans/q03_after.txt) |
+| Plans | [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_before.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_before.txt), [plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_after.txt](plans/Aibangbee_Sandra_2026_A_MIT_0301_301897710_q03_after.txt) |
 | Analysis screenshot | [P2_24 Q03 performance analysis](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_24_Q03_PerformanceAnalysis.png) |
 
 Plan, result and index screenshots for each query are linked from the

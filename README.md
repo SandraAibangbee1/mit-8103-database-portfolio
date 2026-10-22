@@ -2,7 +2,7 @@
 
 **Student:** Sandra Aibangbee  
 **Case Study:** KoraPay Wallet (A Simulated Nigerian Fintech Platform)  
-**Project Status:** Portfolio 1 schema and constraint tests implemented. Portfolio 2 contains three query optimisation investigations and performance analysis. Portfolios 3–5 pending
+**Project Status:** Portfolios 1–3 implemented: Portfolio 1 schema and constraint tests, Portfolio 2 query optimisation investigations and performance analysis, and Portfolio 3 transaction and concurrency demonstrations. Portfolios 4–5 pending.
 
 ---
 
@@ -41,8 +41,8 @@ The implementation will be carried out across five dedicated portfolio milestone
    - **Scope:** Benchmarking and measuring transaction-history and ledger reconciliation queries before and after indexing strategies and query structure improvements.
 
 3. [`portfolio-3-transactions-concurrency/`](./portfolio-3-transactions-concurrency/):
-   - **Status:** Planned
-   - **Scope:** Demonstrating transaction commit, rollback, isolation levels, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and idempotency protection against duplicate requests.
+   - **Status:** Implemented: atomic commit, rollback after a deliberate failure, two concurrent sessions under READ COMMITTED with `SELECT ... FOR UPDATE` row locking and insufficient-funds rejection, ledger reconciliation, and duplicate-reference rejection. See the [Portfolio 3 README](./portfolio-3-transactions-concurrency/README.md) and the [transactions and concurrency analysis](./portfolio-3-transactions-concurrency/transactions-concurrency-analysis.md).
+   - **Scope:** Demonstrating transaction commit and rollback, READ COMMITTED visibility, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and duplicate-request protection. Only READ COMMITTED was demonstrated, and a full idempotent retry workflow was not implemented.
 
 4. [`portfolio-4-nosql/`](./portfolio-4-nosql/):
    - **Status:** Planned
