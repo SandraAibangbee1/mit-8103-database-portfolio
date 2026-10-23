@@ -42,7 +42,7 @@ The implementation will be carried out across five dedicated portfolio milestone
 
 3. [`portfolio-3-transactions-concurrency/`](./portfolio-3-transactions-concurrency/):
    - **Status:** Implemented: atomic commit, rollback after a deliberate failure, two concurrent sessions under READ COMMITTED with `SELECT ... FOR UPDATE` row locking and insufficient-funds rejection, ledger reconciliation, and duplicate-reference rejection. See the [Portfolio 3 README](./portfolio-3-transactions-concurrency/README.md) and the [transactions and concurrency analysis](./portfolio-3-transactions-concurrency/transactions-concurrency-analysis.md).
-   - **Scope:** Demonstrating transaction commit and rollback, READ COMMITTED visibility, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and duplicate-request protection. Only READ COMMITTED was demonstrated, and a full idempotent retry workflow was not implemented.
+   - **Scope:** Demonstrating transaction commit and rollback, READ COMMITTED visibility, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and duplicate-request protection. Later lab experiments add REPEATABLE READ, a deliberate deadlock and an ordered-versus-unordered pgbench comparison, a lock-timeout experiment, concurrent identical retries of the transfer function and final integrity checks.
 
 4. [`portfolio-4-nosql/`](./portfolio-4-nosql/):
    - **Status:** Planned
