@@ -1,0 +1,111 @@
+[{
+  "_id": {
+    "$oid": "6adfaf5bab44da5feacbc4c4"
+  },
+  "notification_id": "P4-N001",
+  "transaction_reference": "P3L-RETRY-COMMIT-001",
+  "wallet_number": "P3LW000001",
+  "channel": "EMAIL",
+  "status": "SENT",
+  "message": {
+    "subject": "Transfer successful",
+    "body": "Your NGN 1.00 transfer was successful."
+  },
+  "created_at": {
+    "$date": "2026-10-26T19:51:55.148Z"
+  },
+  "attempts": [
+    {
+      "attempted_at": {
+        "$date": "2026-10-26T19:57:08.159Z"
+      },
+      "outcome": "SENT",
+      "provider": "SIMULATED"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6adfb1e8ab44da5feacbc4c6"
+  },
+  "notification_id": "P4-N002",
+  "transaction_reference": "P3L-RETRY-ROLLBACK-001",
+  "wallet_number": "P3LW000002",
+  "channel": "SMS",
+  "status": "SENT",
+  "message": {
+    "body": "Sample KoraPay transfer notification"
+  },
+  "created_at": {
+    "$date": "2026-10-26T20:02:48.702Z"
+  },
+  "attempts": []
+},
+{
+  "_id": {
+    "$oid": "6adfb1e8ab44da5feacbc4c7"
+  },
+  "notification_id": "P4-N003",
+  "transaction_reference": "P3L-RETRY-ROLLBACK-001",
+  "wallet_number": "P3LW000002",
+  "channel": "PUSH",
+  "status": "PENDING",
+  "message": {
+    "body": "Sample KoraPay transfer notification"
+  },
+  "created_at": {
+    "$date": "2026-10-26T20:02:48.702Z"
+  },
+  "attempts": []
+},
+{
+  "_id": {
+    "$oid": "6adfb1e8ab44da5feacbc4c8"
+  },
+  "notification_id": "P4-N004",
+  "transaction_reference": "P3L-RETRY-ROLLBACK-001",
+  "wallet_number": "P3LW000002",
+  "channel": "EMAIL",
+  "status": "FAILED",
+  "message": {
+    "body": "Sample KoraPay transfer notification"
+  },
+  "created_at": {
+    "$date": "2026-10-26T20:02:48.702Z"
+  },
+  "attempts": []
+},
+{
+  "_id": {
+    "$oid": "6adfb1e8ab44da5feacbc4c9"
+  },
+  "notification_id": "P4-N005",
+  "transaction_reference": "P3L-RETRY-ROLLBACK-001",
+  "wallet_number": "P3LW000002",
+  "channel": "SMS",
+  "status": "PENDING",
+  "message": {
+    "body": "Sample KoraPay transfer notification"
+  },
+  "created_at": {
+    "$date": "2026-10-26T20:02:48.702Z"
+  },
+  "attempts": []
+},
+{
+  "_id": {
+    "$oid": "6adfb1e8ab44da5feacbc4ca"
+  },
+  "notification_id": "P4-N006",
+  "transaction_reference": "P3L-RETRY-ROLLBACK-001",
+  "wallet_number": "P3LW000002",
+  "channel": "PUSH",
+  "status": "SENT",
+  "message": {
+    "body": "Sample KoraPay transfer notification"
+  },
+  "created_at": {
+    "$date": "2026-10-26T20:02:48.702Z"
+  },
+  "attempts": []
+}]

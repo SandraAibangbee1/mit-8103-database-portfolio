@@ -2,7 +2,7 @@
 
 **Student:** Sandra Aibangbee  
 **Case Study:** KoraPay Wallet (A Simulated Nigerian Fintech Platform)  
-**Project Status:** Portfolios 1–3 implemented: Portfolio 1 schema and constraint tests, Portfolio 2 query optimisation investigations and performance analysis, and Portfolio 3 transaction and concurrency demonstrations. Portfolios 4–5 pending.
+**Project Status:** Portfolios 1–4 implemented: Portfolio 1 schema and constraint tests, Portfolio 2 query optimisation investigations and performance analysis, Portfolio 3 transaction and concurrency demonstrations, and Portfolio 4 NoSQL MongoDB notification documents. Portfolio 5 pending.
 
 ---
 
@@ -45,7 +45,7 @@ The implementation will be carried out across five dedicated portfolio milestone
    - **Scope:** Demonstrating transaction commit and rollback, READ COMMITTED visibility, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and duplicate-request protection. Later lab experiments add REPEATABLE READ, a deliberate deadlock and an ordered-versus-unordered pgbench comparison, a lock-timeout experiment, concurrent identical retries of the transfer function and final integrity checks.
 
 4. [`portfolio-4-nosql/`](./portfolio-4-nosql/):
-   - **Status:** Planned
+   - **Status:** Implemented: MongoDB collection with strict JSON Schema validation, full CRUD operations, status aggregation, unique index with duplicate rejection, and access-path comparison. See the [Portfolio 4 README](./portfolio-4-nosql/README.md) and the [NoSQL analysis](./portfolio-4-nosql/nosql-analysis.md).
    - **Scope:** Implementing transaction notifications as documents in a NoSQL database and documenting architectural trade-offs.
 
 5. [`portfolio-5-distributed-cloud/`](./portfolio-5-distributed-cloud/):
