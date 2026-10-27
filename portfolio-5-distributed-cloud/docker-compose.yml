@@ -1,0 +1,53 @@
+# KoraPay Portfolio 5: local PostgreSQL replication exercise
+# Passwords below are demo values for this coursework only.
+
+services:
+  primary:
+    image: postgres:18
+    container_name: korapay-pg-primary
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: korapay
+      POSTGRES_PASSWORD: korapay_demo_pass
+      POSTGRES_DB: korapay_db
+      REPLICATION_PASSWORD: korapay_repl_demo
+    command:
+      - postgres
+      - -c
+      - wal_level=replica
+      - -c
+      - max_wal_senders=10
+      - -c
+      - max_replication_slots=10
+      - -c
+      - wal_keep_size=256MB
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - primary_data:/var/lib/postgresql
+      - ./primary-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U korapay -d korapay_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  replica:
+    image: postgres:18
+    container_name: korapay-pg-replica
+    restart: unless-stopped
+    depends_on:
+      primary:
+        condition: service_healthy
+    environment:
+      REPLICATION_PASSWORD: korapay_repl_demo
+    entrypoint: ["bash", "/replica-entrypoint.sh"]
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - replica_data:/var/lib/postgresql
+      - ./replica-entrypoint.sh:/replica-entrypoint.sh:ro
+
+volumes:
+  primary_data:
+  replica_data:
