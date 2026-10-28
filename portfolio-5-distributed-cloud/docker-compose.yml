@@ -1,5 +1,8 @@
 # KoraPay Portfolio 5: local PostgreSQL replication exercise
 # Passwords below are demo values for this coursework only.
+# Start with: docker compose up -d   (from this folder)
+# primary-init/01_replication.sh runs only on an empty primary volume and has
+# not been tested that way; see the Portfolio 5 README.
 
 services:
   primary:

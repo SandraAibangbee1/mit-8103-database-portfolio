@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e
 
+# Portfolio 5 replica entrypoint (used by the "replica" service in
+# docker-compose.yml). On first start it copies the primary with
+# pg_basebackup (-R writes the standby settings, -C -S creates the
+# replication slot replica1_slot), then starts PostgreSQL as a hot standby.
+# If the data directory already exists, it skips the copy.
+
 export PGDATA=/var/lib/postgresql/18/docker
 
 if [ ! -s "$PGDATA/PG_VERSION" ]; then

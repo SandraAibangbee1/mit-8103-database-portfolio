@@ -49,7 +49,7 @@ The implementation will be carried out across five dedicated portfolio milestone
    - **Scope:** Implementing transaction notifications as documents in a NoSQL database and documenting architectural trade-offs.
 
 5. [`portfolio-5-distributed-cloud/`](./portfolio-5-distributed-cloud/):
-   - **Status:** Implemented: MongoDB Atlas cluster observed on AWS eu-west-3 with a 3-node replica set, replica set member verification via `db.hello()`, cloud read confirmation, and analysis of replication, availability, consistency, disaster recovery and sharding. See the [Portfolio 5 README](./portfolio-5-distributed-cloud/README.md) and the [distributed/cloud analysis](./portfolio-5-distributed-cloud/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P5_DistributedCloudAnalysis.md).
-   - **Scope:** Observing and analysing a cloud-hosted MongoDB deployment addressing replication, high availability, data consistency, disaster recovery, and the trade-offs of distributing financial data.
+   - **Status:** Implemented: MongoDB Atlas cluster observed on AWS eu-west-3 (3-node replica set confirmed with `db.hello()`, data read from the cloud), and a separate local PostgreSQL 18 primary–standby experiment in Docker (asynchronous streaming replication, a test row read on the replica). Failover, recovery and sharding were discussed but not tested. See the [Portfolio 5 README](./portfolio-5-distributed-cloud/README.md) and the [distributed/cloud analysis](./portfolio-5-distributed-cloud/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P5_DistributedCloudAnalysis.md).
+   - **Scope:** Observing a cloud-hosted MongoDB deployment, testing local PostgreSQL replication, and analysing replication, availability, consistency, disaster recovery and the trade-offs of distributing financial data.
 
 

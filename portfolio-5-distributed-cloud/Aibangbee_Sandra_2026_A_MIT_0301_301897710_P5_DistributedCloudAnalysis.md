@@ -4,6 +4,13 @@
 **Student:** Sandra Aibangbee (Student ID: 2026/A/MIT/0301/301897710)
 **Cluster:** `korapay-cluster` · **Provider:** AWS · **Region:** Paris (`eu-west-3`)
 
+This analysis covers two separate pieces of work:
+
+- **MongoDB Atlas (Sections 1–6):** observations of the cloud cluster that holds the Portfolio 4 data, plus documented MongoDB behaviour.
+- **Local PostgreSQL replication (Section 7):** a primary and one standby run in Docker, with replication checked.
+
+Failover, recovery, sharding and read/write-concern settings were **not tested** in either part. Where a section explains them, it relies on documentation.
+
 ---
 
 ## 1  Cloud Deployment Overview
@@ -56,8 +63,9 @@ The query returned the complete P4-N001 document including:
 - `created_at: ISODate('2026-10-26T19:51:55.148Z')`
 - One delivery attempt with `outcome: 'SENT'`, `provider: 'SIMULATED'`
 
-This confirms that the data created locally in Portfolio 4 is accessible from
-the cloud-hosted cluster.
+This confirms that the Portfolio 4 data is stored on, and can be read from, the
+Atlas cluster. (Portfolio 4 was also carried out on this cluster: the mongosh
+prompt in the Portfolio 4 screenshots shows `Atlas atlas-mkcu1x-shard-0`.)
 
 **Evidence:** Screenshot `…_P5_05_CloudRead.png`.
 
@@ -98,8 +106,9 @@ members: [
 ```
 
 This shows three replica set members.  The connected session was on the primary
-(`…shard-00-01`).  The remaining two nodes (`…shard-00-00` and `…shard-00-02`)
-are secondaries that replicate the primary's data.
+(`…shard-00-01`).  The other two members (`…shard-00-00` and `…shard-00-02`)
+are therefore the secondaries. Their individual state and replication lag were
+not checked.
 
 ### 2.3  Why Replication Matters for KoraPay *(Conceptual)*
 
@@ -130,7 +139,9 @@ supports HA through automatic primary elections: if the primary node becomes
 unreachable, the remaining members elect a new primary, typically within
 10–12 seconds (MongoDB, 2024b).
 
-For the Atlas M0 free tier used here, all three nodes reside in the **same
+The cluster appears to be on the free tier: P5_01 shows a 512 MB storage limit
+and a tier label cut off as "FR…". The exact tier name (for example M0) is not
+visible. P5_01 lists a single region, so all three nodes are in the **same
 AWS region** (`eu-west-3`, Paris).  This provides resilience against
 single-node failures within the region but not against a full regional outage.
 
@@ -164,8 +175,10 @@ at most two of three properties: **Consistency**, **Availability**, and
 
 MongoDB is a **CP-leaning** system:
 
-- Under normal operation, all reads and writes go to a single primary,
-  providing **strong consistency**.
+- Under normal operation, all writes go to a single primary, and by default
+  reads do too. With the defaults in Section 3.2, an acknowledged write can
+  still be rolled back after a failover. Reads reflect only majority-acknowledged
+  writes when `w: "majority"` and read concern `"majority"` are used.
 - During a network partition, if a primary is isolated from the majority of
   members, it steps down and the partition with the majority elects a new
   primary.  The minority partition becomes **unavailable** for writes until
@@ -253,9 +266,9 @@ a shard key would need to be chosen.  Candidates include:
 | `wallet_number` (hashed) | Co-locates all notifications for one wallet on a single shard | Hot shards if some wallets generate disproportionate traffic |
 | `{ wallet_number: 1, created_at: 1 }` (compound) | Range queries by wallet and date stay on one shard | Requires careful zone configuration to avoid monotonic growth |
 
-For the KoraPay use case, a **hashed `notification_id`** key would provide
-the most even write distribution, since notification IDs are unique and
-uniformly distributed.
+For the KoraPay use case, a **hashed `notification_id`** key would likely give
+the most even write distribution. The IDs themselves are sequential
+(`P4-N001`, `P4-N002`, …), but hashing spreads them across shards.
 
 ### 5.3  Why Sharding Is Not Needed Now
 
@@ -274,7 +287,7 @@ The KoraPay Wallet case study uses two database systems:
 
 | Database | Role | Portfolios |
 |----------|------|-----------|
-| **PostgreSQL** | Core financial data: customers, wallets, transactions, ledger entries | 1, 2, 3 |
+| **PostgreSQL** | Core financial data: customers, wallets, transactions, ledger entries | 1, 2, 3 (and a separate local replication test in 5) |
 | **MongoDB (Atlas)** | Transaction notification documents | 4, 5 |
 
 PostgreSQL handles the ACID-critical operations — atomic transfers, row-level
@@ -301,12 +314,76 @@ The Atlas cluster provides:
 
 - Managed infrastructure (no manual `mongod` administration)
 - Automatic replica set elections (documented behaviour; not tested)
-- Monitoring and alerting (visible in the Atlas console, P5_01)
+- Monitoring (the activity charts in P5_01; alert settings were not checked)
 - The ability to scale to larger tiers or enable sharding if needed
 
 ---
 
-## 7  Limitations
+## 7  Local PostgreSQL Replication Experiment
+
+### 7.1  What was run
+
+I ran a separate PostgreSQL 18 replication experiment on my own machine, using
+Docker Desktop 4.97.0 (P5_06) and the `postgres:18` image. It had one primary
+(`korapay-pg-primary`, host port 5433) and one standby replica
+(`korapay-pg-replica`, host port 5434), defined in `docker-compose.yml`.
+`replica-entrypoint.sh` copies the primary with `pg_basebackup` on first start,
+then runs the replica as a hot standby using replication slot `replica1_slot`.
+
+### 7.2  Manual setup
+
+The replica did not start at first. I then set up replication access
+manually on the primary:
+
+1. created the `replicator` role;
+2. added a `pg_hba.conf` rule allowing replication connections from the
+   Docker network;
+3. reloaded the configuration. `pg_reload_conf()` returned `t` (P5_08).
+
+The replica was running again afterwards. `docker ps -a` (P5_07, P5_08)
+showed the primary "Up About an hour (healthy)" and the replica "Up 51
+seconds". The commands used for steps 1 and 2 were not saved; only the
+reload result is shown.
+
+### 7.3  Results
+
+| Check | Evidence | Result |
+|---|---|---|
+| Replication connection on the primary (`pg_stat_replication`) | P5_09 | One connection: `walreceiver`, client `172.18.0.3`, state `streaming`, sync_state `async` |
+| Test row written on the primary, read on the replica | P5_10 | `CREATE TABLE`, `INSERT 0 1` on the primary; the replica returns `1 \| Replication is working` |
+| Replica is a standby (`pg_is_in_recovery()`) | P5_11 | `t` |
+
+**What it shows.** The replica received changes from the primary by
+**asynchronous streaming replication**: the primary sends its write-ahead log
+(WAL) to the standby, and does not wait for the standby before confirming a
+commit (PostgreSQL Global Development Group, 2025). The standby was in
+recovery mode, so it accepted reads but not writes.
+
+**Asynchronous means a short lag is possible.** If the primary failed, a
+commit that had not yet reached the replica could be lost. The lag was not
+measured.
+
+### 7.4  Status of the scripts
+
+- **`primary-init/01_replication.sh` has not been tested.** It was added
+  afterwards to repeat the manual role and `pg_hba.conf` setup automatically.
+  The `postgres` image runs scripts in `/docker-entrypoint-initdb.d` only when
+  the data directory is empty, and this script has not been run against a
+  fresh database.
+- **Its subnet rule is specific to this experiment.** It allows
+  `172.18.0.0/16`, the Docker network used here (the replica connected from
+  `172.18.0.3`). Docker may assign a different subnet on another machine or
+  network.
+
+### 7.5  What it does not show
+
+It does not show replication of the KoraPay financial tables, failover or
+promotion of the replica, recovery, synchronous replication, replication lag,
+or any connection with MongoDB Atlas.
+
+---
+
+## 8  Limitations
 
 1. **No failover test.**  No node was shut down or failed over.  The automatic
    election mechanism is described from documentation, not observed.
@@ -332,13 +409,18 @@ The Atlas cluster provides:
 8. **Simulated delivery.**  As in Portfolio 4, all notification delivery is
    simulated.  No real messages were sent.
 
-9. **Free-tier limitations.**  The Atlas M0 free tier has constraints including
-   limited storage (512 MB), limited connections (500), no dedicated resources,
-   and no continuous backup support.
+9. **Free-tier limitations.**  P5_01 shows a 512 MB storage limit and a
+   500-connection limit. Other free-tier limits, such as shared resources and
+   no continuous backups, come from Atlas documentation and were not checked.
+
+10. **Local PostgreSQL experiment.**  This was a single run of one test table
+    in Docker on one machine. The primary initialization script has not been
+    tested on a fresh database, and its subnet rule only fits this Docker
+    network (Section 7).
 
 ---
 
-## 8  Screenshot Evidence Index
+## 9  Screenshot Evidence Index
 
 | Screenshot | Shows |
 |-----------|-------|
@@ -347,10 +429,17 @@ The Atlas cluster provides:
 | `…_P5_03_CloudNotifications.png` | `transaction_notifications`: 6 documents, 2 indexes; P4-N001 (SENT, EMAIL) and P4-N002 (SENT, SMS) visible |
 | `…_P5_04_ReplicaSetMembers.png` | `db.hello()`: replica set `atlas-mkcu1x-shard-0`, `isPrimary: true`, primary `…shard-00-01`, 3 members |
 | `…_P5_05_CloudRead.png` | `findOne({ notification_id: "P4-N001" })` returning complete document with SENT status and SIMULATED attempt |
+| `…_P5_06_DockerVersion.png` | `docker version`: Docker Desktop 4.97.0, Engine 29.9.2 |
+| `…_P5_07_DockerContainers.png` | `docker ps -a`: `korapay-pg-replica` up 51 seconds, `korapay-pg-primary` up about an hour (healthy) |
+| `…_P5_08_ConfigReloadAndContainers.png` | `pg_reload_conf` returned `t`, followed by the same `docker ps -a` output |
+| `…_P5_09_ReplicationStreaming.png` | `pg_stat_replication` on the primary: `walreceiver`, `172.18.0.3`, `streaming`, `async` |
+| `…_P5_10_ReplicationTest.png` | Table and row created on the primary; the replica returns `1 \| Replication is working` |
+| `…_P5_11_StandbyCheck.png` | `pg_is_in_recovery()` on the replica returns `t` |
+| `…_P5_12_AnalysisInIDE.png` | The local-replication section of this document open in the Antigravity IDE (not evidence of a result) |
 
 ---
 
-## 9  Sources
+## 10  Sources
 
 - Brewer, E. (2000). 'Towards Robust Distributed Systems'. *Proceedings of the
   19th Annual ACM Symposium on Principles of Distributed Computing (PODC)*.
@@ -375,9 +464,16 @@ The Atlas cluster provides:
 - MongoDB (2024e). *MongoDB Atlas Documentation*. Available at:
   https://www.mongodb.com/docs/atlas/
 
+- PostgreSQL Global Development Group (2025). *PostgreSQL 18 Documentation:
+  Log-Shipping Standby Servers (Streaming Replication)*. Available at:
+  https://www.postgresql.org/docs/18/warm-standby.html
+
+The MongoDB and PostgreSQL entries are online manuals that change over time
+(accessed October 2026).
+
 ---
 
-## 10  AI Assistance Disclosure
+## 11  AI Assistance Disclosure
 
 This analysis document and the Portfolio 5 README were prepared with the
 assistance of an AI coding tool (Google Antigravity / Gemini).  The AI was used
@@ -395,19 +491,11 @@ console and MongoDB Compass shell.  The AI did not access the Atlas account,
 execute any database commands, or have access to the connection string or
 credentials.  No results, timestamps, node addresses or configuration values
 were invented — all are taken from the saved screenshots.
----
 
-## Local PostgreSQL Replication Experiment
+AI tools were also used for the Docker, compose and shell files
+(`docker-compose.yml`, `replica-entrypoint.sh`, `primary-init/01_replication.sh`).
 
-I ran a separate PostgreSQL 18 replication experiment locally using Docker
-Desktop. It used a primary database and one standby replica.
-
-The primary reported one replication connection in `streaming` state with
-`async` synchronization. I created a test table and inserted a row on the
-primary. When I queried the replica, the row appeared with the message
-“Replication is working”. The replica also returned `true` for
-`pg_is_in_recovery()`, confirming it was operating as a standby.
-
-This experiment demonstrates replication of the test table and row in the
-local setup. It does not demonstrate replication of the KoraPay financial
-tables, integration with MongoDB Atlas, or failover.
+Claude later simplified the wording, moved the local PostgreSQL experiment
+into Section 7 and documented its manual setup, corrected claims that the
+screenshots do not support, checked the document against all twelve
+screenshots, and renamed the files to the naming standard.
