@@ -54,7 +54,7 @@ All screenshot filenames carry the prefix
 
 ### Analysis Document
 
-See [`distributed-cloud-analysis.md`](./distributed-cloud-analysis.md) for the
+See [`Aibangbee_Sandra_2026_A_MIT_0301_301897710_P5_DistributedCloudAnalysis.md`](./Aibangbee_Sandra_2026_A_MIT_0301_301897710_P5_DistributedCloudAnalysis.md) for the
 full discussion of replication, availability, consistency, disaster recovery,
 sharding, and the relationship to the KoraPay system.
 

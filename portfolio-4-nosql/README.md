@@ -1,132 +1,96 @@
-# Portfolio 4 — NoSQL (MongoDB)
+# Portfolio 4: NoSQL (MongoDB)
 
-**Course:** MIT 8103 Advanced Database Systems
-**Student:** Sandra Aibangbee (Student ID: 2026/A/MIT/0301/301897710)
-**Database:** `korapay_nosql` (MongoDB Atlas)
-**Collection:** `transaction_notifications`
-
----
-
-## Purpose
-
-This portfolio demonstrates a document-oriented extension to the KoraPay Wallet
-case study.  Transaction notifications — records that track whether an EMAIL,
-SMS or PUSH message has been sent for a completed transfer — are modelled as
-MongoDB documents with embedded `message` and `attempts` sub-structures.
-
-The experiments cover:
-
-| # | Experiment | Script(s) | Screenshot(s) |
-|---|-----------|-----------|---------------|
-| 1 | Collection creation with strict JSON Schema validation | `_p4_01_create_collection.js` | P4_01 (tail end showing `{ ok: 1 }` and subsequent validation rejection) |
-| 2 | Validation rejection of an incomplete / invalid document | `_p4_02_validation_rejection.js` | P4_01 |
-| 3 | Insert and read P4-N001 (Create + Read) | `_p4_03_insert_and_read.js` | P4_02 |
-| 4 | Update P4-N001 to SENT with a simulated delivery attempt | `_p4_04_update_status.js` | P4_03 |
-| 5 | Create and delete P4-DELETE-TEST (Delete) | `_p4_05_delete_test.js` | P4_04 |
-| 6 | Insert five sample notifications P4-N002 … P4-N006 | `_p4_06_insert_samples.js` | P4_05 (top half: insertMany result) |
-| 7 | Aggregation by status | `_p4_08_status_aggregation.js` (read-only) | P4_05 (bottom half: aggregation output) |
-| 8 | Unique index + duplicate rejection | `_p4_07_unique_index.js` | P4_07 |
-| 9 | Collection scan vs. indexed lookup (access-path demo) | `_p4_09_index_access_path.js` (read-only) | P4_08 |
-| — | Final verification of recorded state | `_p4_10_verify_collection.js` (read-only) | *(no screenshot — script not yet run)* |
-
-All script filenames carry the prefix
-`Aibangbee_Sandra_2026_A_MIT_0301_301897710`.
+- **Student:** Sandra Aibangbee
+- **Student ID:** 2026/A/MIT/0301/301897710
+- **Course:** MIT 8103 Advanced Database Systems
+- **Database:** `korapay_nosql` on MongoDB Atlas (cluster replica set `atlas-mkcu1x-shard-0`, as shown in every screenshot prompt)
+- **Collection:** `transaction_notifications`
 
 ---
 
-## File Inventory
+## 1. Purpose
 
-### `scripts/`
+This portfolio stores KoraPay Wallet transaction notifications as MongoDB documents. A notification records whether an EMAIL, SMS or PUSH message was sent for a transfer. Each document embeds its `message` and an `attempts` array of delivery attempts. Delivery is simulated; no message was actually sent.
 
-| File | Type | Safe to re-run? |
-|------|------|-----------------|
-| `…_p4_01_create_collection.js` | **CHANGES DATA** — creates collection + validator | No (errors if collection exists) |
-| `…_p4_02_validation_rejection.js` | **ATTEMPTS A WRITE** (expected rejection) | Yes (always rejected) |
-| `…_p4_03_insert_and_read.js` | **CHANGES DATA** — inserts P4-N001 | No (guard: stops if P4-N001 exists) |
-| `…_p4_04_update_status.js` | **CHANGES DATA** — updates P4-N001 | No (guard: stops unless PENDING) |
-| `…_p4_05_delete_test.js` | **CHANGES DATA** — insert then delete | Net-neutral but creates a temporary document |
-| `…_p4_06_insert_samples.js` | **CHANGES DATA** — inserts P4-N002 … N006 | No (guard: stops if any sample exists) |
-| `…_p4_07_unique_index.js` | **CHANGES SCHEMA** — creates index; attempts duplicate | Idempotent for the index; duplicate always fails |
-| `…_p4_08_status_aggregation.js` | **READ-ONLY** | Yes |
-| `…_p4_09_index_access_path.js` | **READ-ONLY** | Yes |
-| `…_p4_10_verify_collection.js` | **READ-ONLY** | Yes |
+The full discussion is in [Aibangbee_Sandra_2026_A_MIT_0301_301897710_P4_NoSQLAnalysis.md](Aibangbee_Sandra_2026_A_MIT_0301_301897710_P4_NoSQLAnalysis.md).
+
+## 2. How the work was done
+
+> [!IMPORTANT]
+> All experiments were run **interactively** in the mongosh shell inside MongoDB Compass, connected to Atlas. The screenshots are the record of what was run.
+>
+> The files in `scripts/` were **written afterwards** from the screenshots and the JSON export. **None of them has been run as a file.** Some commands were not fully visible in the screenshots and have been **reconstructed** (see the Status column below).
+
+## 3. Experiments and evidence
+
+All file names start with `Aibangbee_Sandra_2026_A_MIT_0301_301897710_`.
+
+| # | Experiment | Screenshot | Result shown |
+|---|---|---|---|
+| 1 | Create the collection with `$jsonSchema` validation | P4_01 (top) | Only the final `{ ok: 1 }`; the validator text is not visible |
+| 2 | Insert an invalid document (`INVALID-001`, channel `WHATSAPP`) | P4_01 | `MongoServerError: Document failed validation` |
+| 3 | Insert P4-N001 as PENDING and read it back | P4_02 | `insertedId` `6adfaf5bab44da5feacbc4c4`; `findOne` shows PENDING, `created_at` 2026-10-26T19:51:55.148Z, `attempts: []` |
+| 4 | Mark P4-N001 as SENT with one simulated attempt | P4_03 | `matchedCount: 1`, `modifiedCount: 1`; document shows SENT and one SIMULATED attempt at 19:57:08.159Z. The update command itself is not visible |
+| 5 | Copy P4-N001 as P4-DELETE-TEST, delete it, count it | P4_04 | `insertedId` `6adfb174ab44da5feacbc4c5`, `deletedCount: 1`, count `0` |
+| 6 | Insert five samples P4-N002 to P4-N006 | P4_05 (top) | Five `insertedIds` `…c4c6` to `…c4ca`; only the end of the command is visible |
+| 7 | Count notifications by status | P4_05 (bottom) | FAILED 1, PENDING 2, SENT 3 |
+| 8 | Unique index on `notification_id`, then insert a duplicate | P4_07 | `uq_notification_id` created; `getIndexes` shows it as unique; two duplicate inserts both rejected with E11000 |
+| 9 | Collection scan vs indexed lookup | P4_08 | Scan: 6 documents examined, 0 keys; index: 1 document, 1 key |
+
+There is no P4_06 screenshot. The index was created in the session shown in P4_07.
+
+## 4. Files
+
+### `scripts/` (written after the session; not run as files)
+
+| File | Type | Status |
+|---|---|---|
+| `…_P4_01_CreateCollection.js` | Changes data | **Reconstructed**: the validator is written from the recorded rules, not copied |
+| `…_P4_02_ValidationRejection.js` | Write attempt (rejected) | Transcribed from P4_01 |
+| `…_P4_03_InsertAndRead.js` | Changes data | **Partly reconstructed**: the start of the insert is scrolled out of view in P4_02 |
+| `…_P4_04_UpdateStatus.js` | Changes data | **Reconstructed**: P4_03 shows only the result |
+| `…_P4_05_DeleteTest.js` | Changes data (net zero) | Transcribed from P4_04, with print wrappers added |
+| `…_P4_06_InsertSamples.js` | Changes data | **Reconstructed** from the end of the command in P4_05 and the JSON export |
+| `…_P4_07_UniqueIndex.js` | Creates an index | Transcribed from P4_07, with print wrappers added |
+| `…_P4_08_StatusAggregation.js` | Read-only | Transcribed from P4_05 |
+| `…_P4_09_IndexAccessPath.js` | Read-only | Transcribed from P4_08 |
+| `…_P4_10_VerifyCollection.js` | Read-only | **New**: never run in any form |
+
+Scripts 01, 03, 04 and 06 contain guards that stop them if the recorded data already exists. These guards were added when the files were written and have not been tested.
 
 ### `output/`
 
 | File | Contents |
-|------|----------|
-| `…_p4_notifications.json` | MongoDB Compass export of all 6 documents in Extended JSON format (`$oid`, `$date`) |
+|---|---|
+| `…_P4_NotificationsExport.json` | Compass export of the 6 final documents, in Extended JSON (`$oid`, `$date`). It matches the screenshots: same ObjectIds, statuses and timestamps, and only P4-N001 has an attempt |
 
 ### `screenshots/`
 
-| File | Experiment |
-|------|-----------|
-| `…_P4_01_ValidationRejected.png` | Collection creation result (`{ ok: 1 }`) and validation rejection |
-| `…_P4_02_NotificationCreatedAndRead.png` | P4-N001 insertOne result and findOne showing PENDING |
-| `…_P4_03_NotificationUpdated.png` | updateOne result (matchedCount 1, modifiedCount 1) and findOne showing SENT with one attempt |
-| `…_P4_04_NotificationDeleted.png` | P4-DELETE-TEST insert, deleteOne (deletedCount 1) and countDocuments = 0 |
-| `…_P4_05_StatusAggregation.png` | insertMany of 5 samples and aggregation result (FAILED 1, PENDING 2, SENT 3) |
-| `…_P4_07_DuplicateRejected.png` | createIndex, getIndexes, and two E11000 duplicate-key rejections |
-| `…_P4_08_IndexComparison.png` | Collection scan vs. indexed lookup with execution stats |
+| File | Shows |
+|---|---|
+| `…_P4_01_ValidationRejected.png` | `{ ok: 1 }` from creating the collection, then the rejected WHATSAPP insert |
+| `…_P4_02_NotificationCreatedAndRead.png` | Insert of P4-N001 and `findOne` showing PENDING |
+| `…_P4_03_NotificationUpdated.png` | Update result and `findOne` showing SENT with one SIMULATED attempt |
+| `…_P4_04_NotificationDeleted.png` | P4-DELETE-TEST insert, delete and count |
+| `…_P4_05_StatusAggregation.png` | `insertMany` result and the status counts |
+| `…_P4_07_DuplicateRejected.png` | Index creation, `getIndexes` and two E11000 rejections |
+| `…_P4_08_IndexComparison.png` | Scan vs index execution statistics |
 
-> [!WARNING]
-> **Missing screenshot:** There is no `P4_06` screenshot.  Index creation
-> evidence is captured within `P4_07_DuplicateRejected.png` (which shows
-> `createIndex`, `getIndexes`, and the E11000 errors).
+The five `…_P5_0N_…png` files in this `screenshots/` folder are untracked copies of the Portfolio 5 screenshots. They are not Portfolio 4 evidence.
 
----
+## 5. Running the scripts (untested)
 
-## Analysis Document
-
-See [`nosql-analysis.md`](./nosql-analysis.md) for the full discussion of:
-
-- Document model design (embedded `message` and `attempts`)
-- Validation, CRUD operations, aggregation and indexing
-- Observed results with screenshot cross-references
-- Why notification metadata suits a document database alongside PostgreSQL
-- Limitations, caveats and reproduction instructions
-
----
-
-## Reproduction Instructions
-
-### Prerequisites
-
-- MongoDB 6.0+ (or MongoDB Atlas M0+) with `mongosh` available
-- The database `korapay_nosql` must not already contain
-  `transaction_notifications` if you want to run from scratch
-
-### Run the mutating scripts (in order)
+The scripts have not been run as files, so these steps are untested. To try them against a new, empty `korapay_nosql` database:
 
 ```bash
-mongosh "mongodb+srv://<cluster>/<dbname>" \
-  --file scripts/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p4_01_create_collection.js
-# ... repeat for _p4_02 through _p4_07 in order
+mongosh "mongodb+srv://<cluster>/" --file scripts/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P4_01_CreateCollection.js
+# then P4_02 to P4_07 in order, then the read-only P4_08 to P4_10
 ```
 
-> [!CAUTION]
-> Scripts 01–07 change data or schema.  They include guards that refuse to run
-> if the expected prior state is not found, but you should review each script
-> before execution.  **Do not store or hard-code your database password.**
+Do not store or hard-code a database password.
 
-### Run the read-only verification scripts (any order)
+## 6. AI assistance
 
-```bash
-mongosh "mongodb+srv://<cluster>/<dbname>" \
-  --file scripts/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p4_08_status_aggregation.js
-mongosh "mongodb+srv://<cluster>/<dbname>" \
-  --file scripts/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p4_09_index_access_path.js
-mongosh "mongodb+srv://<cluster>/<dbname>" \
-  --file scripts/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p4_10_verify_collection.js
-```
+The mongosh scripts, this README and the analysis were prepared with the help of an AI coding tool (Google Antigravity / Gemini). It structured and documented the scripts and checked them against the saved screenshots and exported JSON. The experiments were run by the student in MongoDB Compass before the scripts were written. The AI did not run any commands against the database and had no access to the connection string or credentials.
 
----
-
-## AI Assistance Disclosure
-
-The mongosh scripts, README and analysis document were prepared with the
-assistance of an AI coding tool (Google Antigravity / Gemini).  The AI was used
-to structure, document and verify the scripts against the saved screenshots and
-exported JSON.  All experiments were executed by the student in MongoDB Compass
-prior to script generation.  The AI did not execute any commands against the
-database and had no access to the database connection string or credentials.
+Claude later simplified the wording of this README, the analysis and the script headers, labelled which scripts are reconstructed or transcribed, checked the documentation against the screenshots and the JSON export, and renamed the files to the naming standard.

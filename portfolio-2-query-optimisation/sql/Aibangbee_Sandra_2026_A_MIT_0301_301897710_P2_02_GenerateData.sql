@@ -1,22 +1,18 @@
 -- ============================================================================
 -- Course:       MIT 8103 Advanced Database Systems
 -- Student:      Sandra Aibangbee (Student ID: 2026/A/MIT/0301/301897710)
--- Portfolio:    Milestone 2 — Query Optimisation
+-- Portfolio:    2 — Query Optimisation
 -- File:         Aibangbee_Sandra_2026_A_MIT_0301_301897710_P2_02_GenerateData.sql
--- Description:  SYNTHETIC BENCHMARK DATA GENERATION for KoraPay Wallet.
+-- Description:  One-time loader of SYNTHETIC benchmark data into the
+--               Portfolio 1 tables, so query plans can be measured on a
+--               larger, repeatable dataset.
 --
--- WHAT THIS SCRIPT IS:
---   A one-off, set-based loader that fills the existing Portfolio 1 schema
---   with a large, reproducible and internally consistent dataset so that
---   query plans and indexing strategies can be measured in Portfolio 2.
+-- This is NOT the posting procedure and NOT a concurrency control.
+-- Transactions are written directly as SUCCESSFUL, and ledger entries and
+-- balances are calculated in bulk. The Stage 0 table lock only stops other
+-- writers during this one load.
 --
--- WHAT THIS SCRIPT IS NOT:
---   It is NOT an implementation of the production posting procedure and it
---   is NOT a concurrency-control mechanism. Transactions are written directly
---   as SUCCESSFUL and their ledger entries and balances are calculated in
---   bulk. The table lock in Stage 0 only keeps this single load self-contained.
---
--- DATASET PRODUCED (added to existing rows, nothing is removed):
+-- DATASET ADDED (existing rows are kept):
 --   *   5,000 fictional customers        email   p2.customer.NNNNN@example.invalid
 --   *   5,000 customer wallets           number  P2W0000001 ... P2W0005000
 --   *   5,000 funding DEPOSITs           ref     P2-DEP-00001 ... (from SYSTEM_CLEARING)
@@ -24,15 +20,15 @@
 --   * 210,000 ledger entries             exactly one DEBIT + one CREDIT per transaction
 --
 -- EXISTING DATA:
---   Portfolio 1 customers, wallets and the PENDING transaction
---   'test-reference-001' are preserved. No table is dropped, truncated,
---   recreated or altered, and no indexes are added to the KoraPay schema.
---   Only session-scoped TEMP tables (ON COMMIT DROP) are used as staging.
+--   The Portfolio 1 customers, wallets and PENDING transaction
+--   'test-reference-001' are kept. No table is dropped, emptied or altered,
+--   and no index is added to the KoraPay tables. Staging uses TEMP tables
+--   (ON COMMIT DROP) only.
 --
 -- HOW TO RUN (pgAdmin Query Tool):
---   Execute the whole script once (F5). It is standard SQL and PL/pgSQL
---   with no psql meta-commands. If any error is reported, nothing has been
---   committed; run ROLLBACK; before issuing further statements.
+--   Run the whole script once (F5); it has no psql meta-commands. If an
+--   error is reported, nothing was committed: run ROLLBACK; before anything
+--   else in the same tab.
 -- ============================================================================
 
 BEGIN;

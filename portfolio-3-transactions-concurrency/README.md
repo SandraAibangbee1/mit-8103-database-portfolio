@@ -36,7 +36,7 @@ Later experiments on separate lab records (p3_13 onwards) add:
 11. **final read-only integrity checks** (p3_20).
 
 The results are explained in
-[transactions-concurrency-analysis.md](transactions-concurrency-analysis.md).
+[Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_TransactionsConcurrencyAnalysis.md](Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_TransactionsConcurrencyAnalysis.md).
 All customers, wallets and transactions are fictional.
 
 ## 2. Database prerequisites
@@ -58,7 +58,7 @@ All customers, wallets and transactions are fictional.
 | [sql/](sql/) | Preflight, setup, demonstration and experiment scripts (`p3_01` to `p3_20`) |
 | [screenshots/](screenshots/) | pgAdmin evidence for the recorded steps |
 | [output/](output/) | Saved terminal output (p3_13 setup log, p3_17 pgbench results) |
-| [transactions-concurrency-analysis.md](transactions-concurrency-analysis.md) | Explanation of the results, conclusions and limitations |
+| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_TransactionsConcurrencyAnalysis.md](Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_TransactionsConcurrencyAnalysis.md) | Explanation of the results, conclusions and limitations |
 
 ## 4. Portfolio 3 test records
 
@@ -83,49 +83,51 @@ Lab records created by p3_13:
 | Lab funding deposits | `P3L-DEP-001`–`P3L-DEP-020` (balanced DEBIT/CREDIT pairs) |
 | Lab schema | `p3_lab.accounts`, `p3_lab.transfer_log`, `p3_lab.setup_baseline` — not linked to the ledger; used for the deliberately unsafe experiments |
 
-## 5. Scripts and their status
+## 5. Scripts and what the evidence shows
 
-| Script | Purpose | Status of the SQL text |
-|---|---|---|
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_01_preflight.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_01_preflight.sql) | Read-only environment, baseline and reconciliation checks | Executed as written (P3_01–P3_05, P3_07) |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_02_setup.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_02_setup.sql) | One-time creation and funding of the P3 wallets | Executed as written; result in P3_08 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_03_successful_transfer.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_03_successful_transfer.sql) | Demonstration 1: `P3-TRF-001` | Evidence A shown in P3_09; the after-transfer checks in P3_10 and P3_11 were ad-hoc queries, not the file's Evidence B–D |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_04_rollback.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_04_rollback.sql) | Demonstration 2: `P3-FAIL-001` | Executed section by section as written (P3_12–P3_18) |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_05_concurrency_session1.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_05_concurrency_session1.sql) | Demonstration 3: Session 1 | Written after the demonstration and aligned with P3_19, P3_22, P3_24 and P3_25. The start of the posting `DO` block is not visible in P3_25 and is **reconstructed** |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_06_concurrency_session2.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_06_concurrency_session2.sql) | Demonstration 3: Session 2 | Written after the demonstration and aligned with P3_20, P3_21, P3_23, P3_27 and P3_28 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_07_concurrency_observer.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_07_concurrency_observer.sql) | Demonstration 3: observer | Written after the demonstration and aligned with P3_26, P3_29, P3_30 and P3_32. The first five lines of the reconciliation query are not visible in P3_30 and are **reconstructed** |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_08_duplicate_reference.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_08_duplicate_reference.sql) | Demonstration 4: duplicate reference | Same statements as shown in P3_31 and P3_32 (line layout differs) |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_09_transfer_function.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_09_transfer_function.sql) | `public.korapay_transfer_funds` (idempotent transfer function) | Installed; P3_33 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_10_function_retry_test.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_10_function_retry_test.sql) | Same-transaction retry test (rolled back) | Run; P3_34, P3_35 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_11_post_commit_retry_test.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_11_post_commit_retry_test.sql) | Post-commit retry test | No screenshot or saved output; result not reported |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_12_savepoint_demo.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_12_savepoint_demo.sql) | SAVEPOINT recovery | Run; P3_39 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_13_lab_setup.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_13_lab_setup.sql) | Lab wallets, funding and `p3_lab` schema | Executed; log in `output/` |
-| […_p3_14_lost_update_session_a.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_14_lost_update_session_a.sql), […_session_b.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_14_lost_update_session_b.sql) | Lost update, unsafe and safe | Run; P3_40–P3_43 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_15_isolation_levels.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_15_isolation_levels.sql) | READ COMMITTED vs REPEATABLE READ | Run; P3_44, P3_46 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_16_deadlock_demo.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_16_deadlock_demo.sql) | Deliberate deadlock | Run; P3_47, P3_48 |
-| [setup](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_17_benchmark_setup.sql), [unordered](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_17_unordered_workload.sql), [ordered](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_17_ordered_workload.sql) (p3_17) | pgbench lock-order comparison | Run; pgbench output in `output/`, P3_49 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_18_lock_timeout.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_18_lock_timeout.sql) | Lock timeout | Run; P3_50, P3_51 |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_19_concurrent_retry.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_19_concurrent_retry.sql) | Concurrent identical retries | Run; final verification reported only (P3_53 is a copy of P3_54) |
-| [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_20_final_integrity_checks.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_20_final_integrity_checks.sql) | Final read-only integrity checks | Run; P3_54 |
+Script names: `Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_NN_Description.sql`. In the text, **p3_NN** means script NN and **P3_NN** means screenshot NN. These are separate number series: screenshot P3_17 is a rollback step, while script p3_17 is the pgbench test.
+
+**Evidence** column:
+- **Shown**: the result is in a screenshot or saved output file.
+- **Partly shown**: some steps or rows are missing.
+- **Not shown**: no screenshot or output was saved.
+
+| Script | Purpose | How the SQL text relates to what was run | Evidence |
+|---|---|---|---|
+| […_P3_01_Preflight.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_01_Preflight.sql) | Read-only checks before any change | Run as written | Shown: P3_01–P3_05, P3_07. Trigger check (5b) not shown: no P3_06 |
+| […_P3_02_Setup.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_02_Setup.sql) | Create and fund the three P3 wallets (run once) | Run as written | Shown: P3_08 |
+| […_P3_03_SuccessfulTransfer.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_03_SuccessfulTransfer.sql) | Demonstration 1: `P3-TRF-001` | Run as written | Shown: P3_09 (Evidence A). P3_10 and P3_11 are ad-hoc queries, not the file's Evidence B–D |
+| […_P3_04_Rollback.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_04_Rollback.sql) | Demonstration 2: `P3-FAIL-001` | Run section by section as written | Shown: P3_12–P3_18 |
+| […_P3_05_ConcurrencySession1.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_05_ConcurrencySession1.sql) | Demonstration 3: Session 1 | Written afterwards to match P3_19, P3_22, P3_24 and P3_25; the start of the posting `DO` block is **reconstructed** | Shown, except Session 1's `COMMIT` message |
+| […_P3_06_ConcurrencySession2.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_06_ConcurrencySession2.sql) | Demonstration 3: Session 2 | Written afterwards to match P3_20, P3_21, P3_23, P3_27 and P3_28 | Shown, except Session 2's `ROLLBACK` message |
+| […_P3_07_ConcurrencyObserver.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_07_ConcurrencyObserver.sql) | Demonstration 3: observer | Written afterwards to match P3_26, P3_29, P3_30 and P3_32; the first five lines of the reconciliation query are **reconstructed** | Shown |
+| […_P3_08_DuplicateReference.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_08_DuplicateReference.sql) | Demonstration 4: duplicate reference | Same statements as P3_31 and P3_32 (layout differs) | Shown |
+| […_P3_09_TransferFunction.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_09_TransferFunction.sql) | Creates `public.korapay_transfer_funds` | Run (psql) | Shown: P3_33 (creation and catalogue row; not the function body) |
+| […_P3_10_FunctionRetryTest.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_10_FunctionRetryTest.sql) | Identical retry in the same transaction, then rollback | Run (psql) | Shown: P3_34, P3_35 |
+| […_P3_11_PostCommitRetryTest.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_11_PostCommitRetryTest.sql) | Identical retry after the first call committed | Unknown whether run | **Not shown**: no screenshot or output |
+| […_P3_12_SavepointDemo.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_12_SavepointDemo.sql) | SAVEPOINT recovery | Run (psql) | Partly shown: P3_39 shows the final checks, not the deliberate error |
+| […_P3_13_LabSetup.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_13_LabSetup.sql) | Lab wallets, funding and `p3_lab` schema | Run (psql) | Shown: log in `output/` |
+| […_P3_14_LostUpdateSessionA.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_14_LostUpdateSessionA.sql), […_P3_14_LostUpdateSessionB.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_14_LostUpdateSessionB.sql) | Lost update, unsafe and safe | Run section by section | Partly shown: P3_40–P3_43 (initial reads and Session B's updates not shown) |
+| […_P3_15_IsolationLevels.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_15_IsolationLevels.sql) | READ COMMITTED vs REPEATABLE READ | Run section by section | Partly shown: P3_44 (S5), P3_46 (S14). S6 and the S12 serialization error are not shown |
+| […_P3_16_DeadlockDemo.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_16_DeadlockDemo.sql) | Deliberate deadlock | Run section by section | Shown: P3_47, P3_48 (opening values D3 not shown) |
+| […_P3_17_BenchmarkSetup.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_17_BenchmarkSetup.sql), […_P3_17_UnorderedWorkload.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_17_UnorderedWorkload.sql), […_P3_17_OrderedWorkload.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_17_OrderedWorkload.sql) | pgbench lock-order comparison | Run | Shown: both pgbench outputs in `output/`, P3_49. The before/after check logs named in the setup header were not saved |
+| […_P3_18_LockTimeout.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_18_LockTimeout.sql) | Lock timeout | Run section by section | Shown: P3_50, P3_51 |
+| […_P3_19_ConcurrentRetry.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_19_ConcurrentRetry.sql) | Two identical calls at the same time | Reported as run | **Not shown**: P3_53 is a copy of P3_54 (see Section 7) |
+| […_P3_20_FinalIntegrityChecks.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_20_FinalIntegrityChecks.sql) | 12 read-only integrity checks | Run | Partly shown: P3_54 shows checks 1–5 only |
 
 > [!IMPORTANT]
-> **Reconstructed SQL.** `p3_05`, `p3_06` and `p3_07` were written after the
-> concurrency demonstration and then aligned with every statement visible in
-> the screenshots. Lines that are not visible in any screenshot are marked
-> `[Reconstructed]` in the files. For the executed SQL, the **screenshots
-> P3_19–P3_32 are the authoritative record**.
+> **Reconstructed SQL.** p3_05, p3_06 and p3_07 were written after the concurrency demonstration, then aligned with every statement visible in the screenshots. Lines no screenshot shows are marked `[Reconstructed]`. For what was actually run, **screenshots P3_19–P3_32 are the record**.
 
-## 6. Running the scripts in pgAdmin
+## 6. Running the scripts
 
-- Run [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_01_preflight.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_01_preflight.sql) one check at a time.
-- [Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_02_setup.sql](sql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_02_setup.sql) runs once as a whole script. It
-  stops with an exception if any P3 record already exists.
-- All other scripts must be run **section by section, never as a whole file**.
-  Each script's header lists the order.
-- Demonstration 3 needs **separate Query Tool tabs**: one for Session 1, one
-  for Session 2 and one for the observer. Each tab is its own database session.
-- After any error inside an open transaction, run `ROLLBACK;` before anything
-  else in that tab.
+- **pgAdmin Query Tool:**
+  - p3_01: one check at a time.
+  - p3_02 and p3_20: the whole file once.
+  - p3_03–p3_08 and p3_14–p3_18: **section by section, never the whole file**. Each header gives the order.
+- **psql** (the files use `\gset` and `\echo`): p3_09–p3_13. Each header gives the command.
+- **Command Prompt:** p3_17, using the commands in the setup script's header.
+- **Separate tabs, one per session**, for p3_05–p3_07, p3_14–p3_16, p3_18 and p3_19. The cross-session order of steps is listed in each of those headers.
+- After any error inside an open transaction, run `ROLLBACK;` before anything else in that tab.
 
 > [!WARNING]
 > The demonstrations have already been committed in the recorded database.
@@ -224,8 +226,8 @@ duration is reported.
 | P3_46 | [RepeatableReadRetry800](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_46_RepeatableReadRetry800.png) | p3_15 step S14: REPEATABLE READ retry returns 800.00 |
 | P3_47 | [DeadlockDetected](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_47_DeadlockDetected.png) | p3_16: Session B receives `deadlock detected`, SQLSTATE 40P01 |
 | P3_48 | [DeadlockBalancesUnchanged](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_48_DeadlockBalancesUnchanged.png) | p3_16: accounts 1 and 2 at 800.00 / 1,000.00; no open experiment transactions |
-| — | [pgbench unordered](output/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_17_pgbench_unordered.txt) | 1979/2000 processed; 21 deadlock failures |
-| — | [pgbench ordered](output/Aibangbee_Sandra_2026_A_MIT_0301_301897710_p3_17_pgbench_ordered.txt) | 2000/2000 processed; 0 failures |
+| — | [pgbench unordered](output/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_17_PgbenchUnordered.txt) | 1979/2000 processed; 21 deadlock failures |
+| — | [pgbench ordered](output/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_17_PgbenchOrdered.txt) | 2000/2000 processed; 0 failures |
 | P3_49 | [PgbenchIntegrityConfirmed](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_49_PgbenchIntegrityConfirmed.png) | After both runs: 0 negative balances; log rows 1979 unordered and 2000 ordered |
 
 The two pgbench output files are UTF-16 text (saved by a PowerShell redirect).
@@ -236,53 +238,23 @@ The two pgbench output files are UTF-16 text (saved by a PowerShell redirect).
 |---|---|---|
 | P3_50 | [LockTimeout](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_50_LockTimeout.png) | p3_18: `canceling statement due to lock timeout`, SQLSTATE 55P03, after 00:00:03.094 |
 | P3_51 | [LockTimeoutVerified](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_51_LockTimeoutVerified.png) | p3_18: account 3 = 100,016.00 with an earlier `updated_at`; `lock_timeout` 0; 0 open experiment transactions |
-| P3_53 | [ConcurrentRetryVerified](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_53_ConcurrentRetryVerified.png) | Identical to P3_54 (shows the p3_20 checks, not p3_19). p3_19 final verification is reported only: `P3L-RETRY-COMMIT-001` = 105037 and `P3L-RETRY-ROLLBACK-001` = 105040, both SUCCESSFUL, 1.00, 2 ledger entries |
-| P3_54 | [FinalIntegrityChecks](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_54_FinalIntegrityChecks.png) | p3_20: 12 result rows; checks 1–5 visible, all `pass = true` (all 12 reported as passing) |
+| P3_53 | `ConcurrentRetryVerified` (not linked: the file is untracked) | **Does not show p3_19.** Byte-for-byte copy of P3_54, so it shows the p3_20 checks. It is also untracked in Git. The p3_19 result has no saved evidence |
+| P3_54 | [FinalIntegrityChecks](screenshots/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_54_FinalIntegrityChecks.png) | p3_20: "Showing rows 1 to 12"; checks 1–5 visible, all `pass = true`. Checks 6–12 are not visible |
+
+**Gaps in the numbering:** P3_06, P3_36–P3_38, P3_45 and P3_52 do not exist. The file `screenshots/…_p3_17_benchmark_setup.sql` (untracked) is actually a PNG of the p3_17 unordered-workload script with no result, so it is not evidence.
 
 ## 8. Limitations
 
-- **Isolation levels.** READ COMMITTED and REPEATABLE READ were used;
-  SERIALIZABLE was not tested. The p3_15 READ COMMITTED second read (S6) and
-  the REPEATABLE READ serialization error (S12) were not captured as
-  screenshots.
-- **p3_19 and p3_20 evidence.** P3_53 is a byte-identical copy of P3_54 and
-  shows the p3_20 result, so the p3_19 verification figures are reported
-  only; the waiting and returned-ID steps were not captured. P3_54 shows only
-  checks 1–5 of p3_20; checks 6–12 are reported as passing.
-- **p3_09–p3_14 evidence.** p3_11 has no screenshot or saved output. P3_33
-  does not show the function body, and P3_39 does not show the deliberate
-  SAVEPOINT error. For p3_14, the initial reads, Session B's unsafe write and
-  Session B's 800.00 result were not captured; P3_40 shows Session A's
-  section A3a despite its name.
-- **Session 2 was validation only.** It locked the wallets and checked the
-  balance. No second transfer was posted and no second posting routine was
-  executed.
-- **Duplicate-request protection in Demonstrations 1–4.** There, the unique
-  reference only blocks a second transaction with the same reference. The
-  later p3_09 function adds retry handling, tested concurrently in p3_19.
-- **Reconstructed SQL.** Parts of `p3_05` and `p3_07` that are not visible in
-  any screenshot are reconstructed (see Section 5).
-- **Missing screenshots.** P3_06 (the trigger check) is not available, so no
-  trigger result is reported. Some executed steps have no screenshot of their
-  own:
-  - the `Messages` output of the `P3-TRF-001` transfer block (its committed
-    result is shown in P3_10 and P3_11);
-  - Session 1's `COMMIT` (its effect is shown in P3_27 and P3_29);
-  - Session 2's `ROLLBACK` (later outputs are consistent with it: P3_30, P3_32);
-  - the `ROLLBACK` after the duplicate-reference error (P3_32 shows the
-    resulting state).
+The full list is in the [analysis, Section 14](Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_TransactionsConcurrencyAnalysis.md#14-limitations). In short:
 
-  These commands were executed; only their own messages were not captured.
-  P3_10 and P3_11 are ad-hoc queries rather than the script's Evidence B–D.
-- **Posting routine and permissions.** Demonstrations 1–4 posted in
-  transaction blocks and `DO` blocks. The p3_09 function runs with the
-  caller's privileges; the `SECURITY DEFINER` routine and permission model
-  proposed in Portfolio 1 were not implemented.
-- **Load test scope.** p3_17 ran each variant once on the lab table. Deadlock
-  detection time affects its latency and TPS figures, and no "before" check
-  or visible total-balance result was saved.
+- **No saved evidence:** the p3_19 concurrent retry, the p3_11 post-commit retry, the trigger check (P3_06), and p3_20 checks 6–12.
+- **Not tested:** SERIALIZABLE; rejection of a reused reference with different request details; overspending on real wallets without `FOR UPDATE` (the lost update was shown on the lab table only).
+- **Not implemented:** the `SECURITY DEFINER` posting routine and revoked privileges proposed in Portfolio 1 (the p3_09 function runs with the caller's privileges).
+- **Reconstructed SQL:** parts of p3_05 and p3_07 (Section 5).
+- **Single runs:** each demonstration and each pgbench variant was run once.
 
 ## 9. AI assistance
 
-ChatGPT and Claude assisted with SQL drafting, explanations and documentation
-for this portfolio. I executed the SQL in pgAdmin and captured the screenshots.
+ChatGPT and Claude assisted with SQL drafting, explanations and documentation for this portfolio. I executed the SQL in pgAdmin and psql and captured the screenshots.
+
+Claude later simplified the wording of this README, the analysis and the SQL comments, checked the documented results against the screenshots and output files, and renamed the Portfolio 3 files to the naming standard.

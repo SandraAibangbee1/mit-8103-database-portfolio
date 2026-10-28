@@ -2,7 +2,7 @@
 
 **Student:** Sandra Aibangbee  
 **Case Study:** KoraPay Wallet (A Simulated Nigerian Fintech Platform)  
-**Project Status:** Portfolios 1–4 implemented: Portfolio 1 schema and constraint tests, Portfolio 2 query optimisation investigations and performance analysis, Portfolio 3 transaction and concurrency demonstrations, and Portfolio 4 NoSQL MongoDB notification documents. Portfolio 5 pending.
+**Project Status:** All five portfolios implemented: Portfolio 1 schema and constraint tests, Portfolio 2 query optimisation investigations and performance analysis, Portfolio 3 transaction and concurrency demonstrations, Portfolio 4 NoSQL MongoDB notification documents, and Portfolio 5 cloud deployment and distributed-systems analysis.
 
 ---
 
@@ -34,22 +34,22 @@ The implementation will be carried out across five dedicated portfolio milestone
 
 1. [`portfolio-1-database-design/`](./portfolio-1-database-design/):
    - **Status:** Implemented: four-table schema created and constraint tests completed. See the [Portfolio 1 README](./portfolio-1-database-design/README.md).
-   - **Scope:** Conceptual and logical data modeling, Entity-Relationship (ER) diagram, relational schema design, primary/foreign keys, integrity constraints (`CHECK`, `UNIQUE`), and database normalisation documentation. See the full [Case Study Specification](./portfolio-1-database-design/case-study.md).
+   - **Scope:** Conceptual and logical data modeling, Entity-Relationship (ER) diagram, relational schema design, primary/foreign keys, integrity constraints (`CHECK`, `UNIQUE`), and database normalisation documentation. See the full [Case Study Specification](./portfolio-1-database-design/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P1_CaseStudy.md).
 
 2. [`portfolio-2-query-optimisation/`](./portfolio-2-query-optimisation/):
    - **Status:** Implemented: three query optimisation investigations with execution plans and performance analysis. See the [Portfolio 2 README](./portfolio-2-query-optimisation/README.md).
-   - **Scope:** Benchmarking and measuring transaction-history and ledger reconciliation queries before and after indexing strategies and query structure improvements.
+   - **Scope:** Measuring three reporting queries (a wallet statement, daily transfer totals and the top sending wallets) before and after two indexes and one query rewrite, using `EXPLAIN (ANALYZE, BUFFERS)` on a synthetic dataset. No reconciliation query was benchmarked.
 
 3. [`portfolio-3-transactions-concurrency/`](./portfolio-3-transactions-concurrency/):
-   - **Status:** Implemented: atomic commit, rollback after a deliberate failure, two concurrent sessions under READ COMMITTED with `SELECT ... FOR UPDATE` row locking and insufficient-funds rejection, ledger reconciliation, and duplicate-reference rejection. See the [Portfolio 3 README](./portfolio-3-transactions-concurrency/README.md) and the [transactions and concurrency analysis](./portfolio-3-transactions-concurrency/transactions-concurrency-analysis.md).
-   - **Scope:** Demonstrating transaction commit and rollback, READ COMMITTED visibility, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and duplicate-request protection. Later lab experiments add REPEATABLE READ, a deliberate deadlock and an ordered-versus-unordered pgbench comparison, a lock-timeout experiment, concurrent identical retries of the transfer function and final integrity checks.
+   - **Status:** Implemented: atomic commit, rollback after a deliberate failure, two concurrent sessions under READ COMMITTED with `SELECT ... FOR UPDATE` row locking and insufficient-funds rejection, ledger reconciliation, and duplicate-reference rejection. See the [Portfolio 3 README](./portfolio-3-transactions-concurrency/README.md) and the [transactions and concurrency analysis](./portfolio-3-transactions-concurrency/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P3_TransactionsConcurrencyAnalysis.md).
+   - **Scope:** Demonstrating transaction commit and rollback, READ COMMITTED visibility, simultaneous transfer locking (`SELECT ... FOR UPDATE`), race-condition mitigation, and duplicate-request protection. Later experiments add an idempotent transfer function with a same-transaction retry test, a SAVEPOINT test, a lost update, REPEATABLE READ, a deliberate deadlock, an ordered-versus-unordered pgbench comparison, a lock timeout and final integrity checks. A concurrent identical-retry test was also scripted, but no evidence of its result was saved.
 
 4. [`portfolio-4-nosql/`](./portfolio-4-nosql/):
-   - **Status:** Implemented: MongoDB collection with strict JSON Schema validation, full CRUD operations, status aggregation, unique index with duplicate rejection, and access-path comparison. See the [Portfolio 4 README](./portfolio-4-nosql/README.md) and the [NoSQL analysis](./portfolio-4-nosql/nosql-analysis.md).
+   - **Status:** Implemented interactively on MongoDB Atlas: a collection with JSON Schema validation, create, read, update and delete operations, status aggregation, a unique index with duplicate rejection, and an access-path comparison. The script files were written afterwards and have not been run as files. See the [Portfolio 4 README](./portfolio-4-nosql/README.md) and the [NoSQL analysis](./portfolio-4-nosql/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P4_NoSQLAnalysis.md).
    - **Scope:** Implementing transaction notifications as documents in a NoSQL database and documenting architectural trade-offs.
 
 5. [`portfolio-5-distributed-cloud/`](./portfolio-5-distributed-cloud/):
-   - **Status:** Planned
-   - **Scope:** Proposing a deployment architecture addressing replication, high availability, data consistency, disaster recovery, and the trade-offs of distributing financial data.
+   - **Status:** Implemented: MongoDB Atlas cluster observed on AWS eu-west-3 with a 3-node replica set, replica set member verification via `db.hello()`, cloud read confirmation, and analysis of replication, availability, consistency, disaster recovery and sharding. See the [Portfolio 5 README](./portfolio-5-distributed-cloud/README.md) and the [distributed/cloud analysis](./portfolio-5-distributed-cloud/Aibangbee_Sandra_2026_A_MIT_0301_301897710_P5_DistributedCloudAnalysis.md).
+   - **Scope:** Observing and analysing a cloud-hosted MongoDB deployment addressing replication, high availability, data consistency, disaster recovery, and the trade-offs of distributing financial data.
 
 
