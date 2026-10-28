@@ -475,27 +475,6 @@ The MongoDB and PostgreSQL entries are online manuals that change over time
 
 ## 11  AI Assistance Disclosure
 
-This analysis document and the Portfolio 5 README were prepared with the
-assistance of an AI coding tool (Google Antigravity / Gemini).  The AI was used
-to:
-
-- Structure the document and format evidence tables
-- Cross-reference the five screenshots against the narrative
-- Draft explanations of replication, consistency, CAP theorem, sharding and
-  disaster recovery concepts
-- Identify and clearly label the boundary between observed evidence and
-  general explanations
-
-All screenshots were captured by the student from the live MongoDB Atlas
-console and MongoDB Compass shell.  The AI did not access the Atlas account,
-execute any database commands, or have access to the connection string or
-credentials.  No results, timestamps, node addresses or configuration values
-were invented — all are taken from the saved screenshots.
-
-AI tools were also used for the Docker, compose and shell files
-(`docker-compose.yml`, `replica-entrypoint.sh`, `primary-init/01_replication.sh`).
-
-Claude later simplified the wording, moved the local PostgreSQL experiment
-into Section 7 and documented its manual setup, corrected claims that the
-screenshots do not support, checked the document against all twelve
-screenshots, and renamed the files to the naming standard.
+- **ChatGPT:** used for documentation.
+- **Claude:** used in the final review and cleanup of this portfolio's
+  documents and file names.

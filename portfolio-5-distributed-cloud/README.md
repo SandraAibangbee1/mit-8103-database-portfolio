@@ -114,8 +114,5 @@ All file names start with `Aibangbee_Sandra_2026_A_MIT_0301_301897710_`.
 
 ## 5. AI assistance
 
-The README and analysis document were prepared with the assistance of an AI coding tool (Google Antigravity / Gemini). The AI was used to structure the documents, cross-reference screenshots, and draft explanations of distributed database concepts. All observations are drawn from the student's own screenshots of the live Atlas cluster and mongosh session. The AI did not access the Atlas account, the database connection string, or any credentials.
-
-AI tools were also used for the Docker, compose and shell files (`docker-compose.yml`, `replica-entrypoint.sh`, `primary-init/01_replication.sh`).
-
-Claude later simplified the wording of this README, the analysis and the Docker file comments, added the local PostgreSQL experiment to the README, checked the documents against the screenshots, and renamed the files to the naming standard.
+- **ChatGPT:** used for documentation.
+- **Claude:** used in the final review and cleanup of this portfolio's documents and file names.
