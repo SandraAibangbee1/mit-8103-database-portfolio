@@ -53,3 +53,8 @@ The implementation will be carried out across five dedicated portfolio milestone
    - **Scope:** Observing a cloud-hosted MongoDB deployment, testing local PostgreSQL replication, and analysing replication, availability, consistency, disaster recovery and the trade-offs of distributing financial data.
 
 
+---
+
+## AI assistance
+
+AI tools were used in this work. Each portfolio's README has its own AI disclosure, listing the tools used for that portfolio and what they were used for.
