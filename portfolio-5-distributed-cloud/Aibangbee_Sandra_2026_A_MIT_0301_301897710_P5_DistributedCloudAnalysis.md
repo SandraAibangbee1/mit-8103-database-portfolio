@@ -476,5 +476,6 @@ The MongoDB and PostgreSQL entries are online manuals that change over time
 ## 11  AI Assistance Disclosure
 
 - **ChatGPT:** used for documentation.
-- **Claude:** used in the final review and cleanup of this portfolio's
-  documents and file names.
+- **Google Antigravity / Gemini:** used to look out for errors.
+- **Claude:** final review and cleanup of this portfolio's documents and file
+  names.

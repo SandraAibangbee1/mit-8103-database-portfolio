@@ -115,4 +115,5 @@ All file names start with `Aibangbee_Sandra_2026_A_MIT_0301_301897710_`.
 ## 5. AI assistance
 
 - **ChatGPT:** used for documentation.
-- **Claude:** used in the final review and cleanup of this portfolio's documents and file names.
+- **Google Antigravity / Gemini:** used to look out for errors.
+- **Claude:** final review and cleanup of this portfolio's documents and file names.
